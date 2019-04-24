@@ -1,13 +1,22 @@
 package info.androidhive.materialtabs.activity;
 
+import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import android.text.Html;
+import android.view.View;
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,40 +35,114 @@ import info.androidhive.materialtabs.fragments.TwoFragment;
 
 public class ScrollableTabsActivity extends AppCompatActivity {
 
-    private Toolbar toolbar;
+//    private Toolbar toolbar;
     private TabLayout tabLayout;
-    private ViewPager viewPager;
+    private ViewPager mViewPager;
+//    private int[] layouts;
+    private LinearLayout dotsLayout;
+    private TextView[] dots;
+    private int mCouponTotal;
+    ViewPagerAdapter mViewPagerAdapter;
+    ViewStatePagerAdapter mViewStatePagerAdapter;
+    Button btnDelete;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scrollable_tabs);
+        dotsLayout = findViewById(R.id.layoutDots);
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        btnDelete = findViewById(R.id.btnDelete);
+        mViewPager = findViewById(R.id.viewpager);
+//        setupViewPager(mViewPager);
+        setupViewPager1();
+        mCouponTotal = 10;
+//        addBottomDots(0);
 
-        viewPager = (ViewPager) findViewById(R.id.viewpager);
-        setupViewPager(viewPager);
+        addDots();
+        tabLayout = findViewById(R.id.tabs);
+        tabLayout.setupWithViewPager(mViewPager);
+        LinearLayout linearLayout = (LinearLayout) tabLayout.getChildAt(0);
+        linearLayout.setShowDividers(LinearLayout.SHOW_DIVIDER_MIDDLE);
+        GradientDrawable drawable = new GradientDrawable();
+        drawable.setColor(Color.parseColor("#edeeef"));
+        drawable.setSize(10, 1);
+        linearLayout.setDividerPadding(10);
+        linearLayout.setDividerDrawable(drawable);
 
-        tabLayout = (TabLayout) findViewById(R.id.tabs);
-        tabLayout.setupWithViewPager(viewPager);
+
+        btnDelete.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                int position  = tabLayout.getSelectedTabPosition();
+                tabLayout.removeTab(tabLayout.getTabAt(position));
+                mViewPager.removeAllViews();
+                mViewStatePagerAdapter.deletePage(position);
+                mViewPager.setAdapter(mViewStatePagerAdapter);
+                //TODO set tab layout for next page
+                //TODO set view pager for next page
+            }
+        });
     }
+
+    /*int h = v.getMeasuredWidth();
+    int w = v.getMeasuredWidth();
+    int h2 = (int) (h * 1.2);
+    FrameLayout.LayoutParams pr = new FrameLayout.LayoutParams(w, h2);
+                v.setLayoutParams(pr);*/
 
     private void setupViewPager(ViewPager viewPager) {
-        ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        adapter.addFrag(new OneFragment(), "ONE");
-        adapter.addFrag(new TwoFragment(), "TWO");
-        adapter.addFrag(new ThreeFragment(), "THREE");
-        adapter.addFrag(new FourFragment(), "FOUR");
-        adapter.addFrag(new FiveFragment(), "FIVE");
-        adapter.addFrag(new SixFragment(), "SIX");
-        adapter.addFrag(new SevenFragment(), "SEVEN");
-        adapter.addFrag(new EightFragment(), "EIGHT");
-        adapter.addFrag(new NineFragment(), "NINE");
-        adapter.addFrag(new TenFragment(), "TEN");
-        viewPager.setAdapter(adapter);
+        mViewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
+        mViewPagerAdapter.addFrag(new OneFragment(), "ONE");
+        mViewPagerAdapter.addFrag(new TwoFragment(), "TWO");
+        mViewPagerAdapter.addFrag(new ThreeFragment(), "THREE HREE HREE");
+        mViewPagerAdapter.addFrag(new FourFragment(), "FOUR");
+        mViewPagerAdapter.addFrag(new FiveFragment(), "FIVE");
+        mViewPagerAdapter.addFrag(new SixFragment(), "SIX");
+        mViewPagerAdapter.addFrag(new SevenFragment(), "SEVEN");
+        mViewPagerAdapter.addFrag(new EightFragment(), "EIGHT");
+        mViewPagerAdapter.addFrag(new NineFragment(), "NINE");
+        mViewPagerAdapter.addFrag(new TenFragment(), "TEN");
+        viewPager.setAdapter(mViewPagerAdapter);
+        viewPager.addOnPageChangeListener(mOnPageChangeListener);
     }
+
+    private void setupViewPager1() {
+        mViewStatePagerAdapter = new ViewStatePagerAdapter(getSupportFragmentManager());
+        mViewStatePagerAdapter.addFrag(new OneFragment(), "ONE");
+        mViewStatePagerAdapter.addFrag(new TwoFragment(), "TWO");
+        mViewStatePagerAdapter.addFrag(new ThreeFragment(), "THREE HREE HREE");
+        mViewStatePagerAdapter.addFrag(new FourFragment(), "FOUR");
+        mViewStatePagerAdapter.addFrag(new FiveFragment(), "FIVE");
+        mViewStatePagerAdapter.addFrag(new SixFragment(), "SIX");
+        mViewStatePagerAdapter.addFrag(new SevenFragment(), "SEVEN");
+        mViewStatePagerAdapter.addFrag(new EightFragment(), "EIGHT");
+        mViewStatePagerAdapter.addFrag(new NineFragment(), "NINE");
+        mViewStatePagerAdapter.addFrag(new TenFragment(), "TEN");
+        mViewPager.setAdapter(mViewStatePagerAdapter);
+        mViewPager.addOnPageChangeListener(mOnPageChangeListener);
+    }
+
+
+    ViewPager.OnPageChangeListener mOnPageChangeListener = new ViewPager.OnPageChangeListener() {
+        @Override
+        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+//            addBottomDots(position);
+            highlightDots(position);
+        }
+
+
+        @Override
+        public void onPageSelected(int position) {
+
+        }
+
+        @Override
+        public void onPageScrollStateChanged(int state) {
+
+        }
+    };
+
 
     class ViewPagerAdapter extends FragmentPagerAdapter {
         private final List<Fragment> mFragmentList = new ArrayList<>();
@@ -87,6 +170,115 @@ public class ScrollableTabsActivity extends AppCompatActivity {
         @Override
         public CharSequence getPageTitle(int position) {
             return mFragmentTitleList.get(position);
+        }
+
+        // Delete a page at a `position`
+        public void deletePage(int position)
+        {
+            // Remove the corresponding item in the data set
+            mFragmentList.remove(position);
+            mFragmentTitleList.remove(position);
+            // Notify the adapter that the data set is changed
+            notifyDataSetChanged();
+        }
+
+    }
+
+    class ViewStatePagerAdapter extends FragmentStatePagerAdapter {
+        private final List<Fragment> mFragmentList = new ArrayList<>();
+        private final List<String> mFragmentTitleList = new ArrayList<>();
+
+        public ViewStatePagerAdapter(FragmentManager manager) {
+            super(manager);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            return mFragmentList.get(position);
+        }
+
+        @Override
+        public int getCount() {
+            return mFragmentList.size();
+        }
+
+        public void addFrag(Fragment fragment, String title) {
+            mFragmentList.add(fragment);
+            mFragmentTitleList.add(title);
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return mFragmentTitleList.get(position);
+        }
+
+        // Delete a page at a `position`
+        public void deletePage(int position)
+        {
+            // Remove the corresponding item in the data set
+            mFragmentList.remove(position);
+            mFragmentTitleList.remove(position);
+            // Notify the adapter that the data set is changed
+            notifyDataSetChanged();
+        }
+
+        @Override
+        public int getItemPosition(@NonNull Object object) {
+            return PagerAdapter.POSITION_NONE;
+        }
+    }
+
+    private void addBottomDots(int currentPage) {
+        mCouponTotal = 10;
+        dots = new TextView[mCouponTotal];
+
+//        int[] colorsActive = new int[mCouponTotal];
+//        int[] colorsInactive = new int[mCouponTotal];
+        int[] colorsActive = getResources().getIntArray(R.array.array_dot_active);
+        int[] colorsInactive = getResources().getIntArray(R.array.array_dot_inactive);
+        /*for(int i = 0 ; i < mCouponTotal; i ++){
+            colorsActive[i] = R.color.dot_light_screen;
+            colorsInactive[i] = R.color.dot_dark_screen;
+        }*/
+
+        dotsLayout.removeAllViews();
+        for (int i = 0; i < dots.length; i++) {
+            dots[i] = new TextView(this);
+            //add 。。。
+            dots[i].setText(Html.fromHtml("&#8226;", Html.FROM_HTML_MODE_LEGACY));
+            dots[i].setTextSize(25);
+            dots[i].setTextColor(colorsInactive[i]);
+            dots[i].setPadding(3,0,3,0);
+            dotsLayout.addView(dots[i]);
+        }
+
+        if (dots.length > 0)
+            dots[currentPage].setTextColor(colorsActive[currentPage]);
+    }
+
+    private void addDots(){
+        dots = new TextView[mCouponTotal];
+        int[] colorsActive = getResources().getIntArray(R.array.array_dot_active);
+        int[] colorsInactive = getResources().getIntArray(R.array.array_dot_inactive);
+        dotsLayout.removeAllViews();
+        for (int i = 0; i < dots.length; i++) {
+            dots[i] = new TextView(this);
+            //add 。。。
+            dots[i].setText(Html.fromHtml("&#8226;", Html.FROM_HTML_MODE_LEGACY));
+            dots[i].setTextSize(25);
+            dots[i].setTextColor(colorsInactive[i]);
+            dots[i].setPadding(3,0,3,0);
+            dotsLayout.addView(dots[i]);
+        }
+    }
+
+    private void highlightDots(int currentPage){
+        int[] colorsActive = getResources().getIntArray(R.array.array_dot_active);
+        int[] colorsInactive = getResources().getIntArray(R.array.array_dot_inactive);
+        dots[currentPage].setTextColor(colorsActive[currentPage]);
+        for (int i = 0; i < dots.length; i++) {
+            if(i != currentPage)
+                dots[i].setTextColor(colorsInactive[i]);
         }
     }
 }
