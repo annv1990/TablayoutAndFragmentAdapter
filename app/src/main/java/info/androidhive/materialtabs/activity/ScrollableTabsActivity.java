@@ -69,42 +69,14 @@ public class ScrollableTabsActivity extends AppCompatActivity {
         drawable.setSize(10, 1);
         linearLayout.setDividerPadding(10);
         linearLayout.setDividerDrawable(drawable);
-
-
         btnDelete.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
                 int position  = tabLayout.getSelectedTabPosition();
-                tabLayout.removeTab(tabLayout.getTabAt(position));
                 mViewPager.removeAllViews();
                 mViewStatePagerAdapter.deletePage(position);
-                mViewPager.setAdapter(mViewStatePagerAdapter);
-                //TODO set tab layout for next page
-                //TODO set view pager for next page
             }
         });
-    }
-
-    /*int h = v.getMeasuredWidth();
-    int w = v.getMeasuredWidth();
-    int h2 = (int) (h * 1.2);
-    FrameLayout.LayoutParams pr = new FrameLayout.LayoutParams(w, h2);
-                v.setLayoutParams(pr);*/
-
-    private void setupViewPager(ViewPager viewPager) {
-        mViewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
-        mViewPagerAdapter.addFrag(new OneFragment(), "ONE");
-        mViewPagerAdapter.addFrag(new TwoFragment(), "TWO");
-        mViewPagerAdapter.addFrag(new ThreeFragment(), "THREE HREE HREE");
-        mViewPagerAdapter.addFrag(new FourFragment(), "FOUR");
-        mViewPagerAdapter.addFrag(new FiveFragment(), "FIVE");
-        mViewPagerAdapter.addFrag(new SixFragment(), "SIX");
-        mViewPagerAdapter.addFrag(new SevenFragment(), "SEVEN");
-        mViewPagerAdapter.addFrag(new EightFragment(), "EIGHT");
-        mViewPagerAdapter.addFrag(new NineFragment(), "NINE");
-        mViewPagerAdapter.addFrag(new TenFragment(), "TEN");
-        viewPager.setAdapter(mViewPagerAdapter);
-        viewPager.addOnPageChangeListener(mOnPageChangeListener);
     }
 
     private void setupViewPager1() {
