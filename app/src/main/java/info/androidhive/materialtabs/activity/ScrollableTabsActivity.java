@@ -42,7 +42,6 @@ public class ScrollableTabsActivity extends AppCompatActivity {
     private LinearLayout dotsLayout;
     private TextView[] dots;
     private int mCouponTotal;
-    ViewPagerAdapter mViewPagerAdapter;
     ViewStatePagerAdapter mViewStatePagerAdapter;
     Button btnDelete;
 
@@ -54,16 +53,15 @@ public class ScrollableTabsActivity extends AppCompatActivity {
 
         btnDelete = findViewById(R.id.btnDelete);
         mViewPager = findViewById(R.id.viewpager);
-//        setupViewPager(mViewPager);
         setupViewPager1();
         mCouponTotal = 10;
-//        addBottomDots(0);
 
         addDots();
         tabLayout = findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
         LinearLayout linearLayout = (LinearLayout) tabLayout.getChildAt(0);
         linearLayout.setShowDividers(LinearLayout.SHOW_DIVIDER_MIDDLE);
+        // add space between
         GradientDrawable drawable = new GradientDrawable();
         drawable.setColor(Color.parseColor("#edeeef"));
         drawable.setSize(10, 1);
@@ -83,7 +81,7 @@ public class ScrollableTabsActivity extends AppCompatActivity {
         mViewStatePagerAdapter = new ViewStatePagerAdapter(getSupportFragmentManager());
         mViewStatePagerAdapter.addFrag(new OneFragment(), "ONE");
         mViewStatePagerAdapter.addFrag(new TwoFragment(), "TWO");
-        mViewStatePagerAdapter.addFrag(new ThreeFragment(), "THREE HREE HREE");
+        mViewStatePagerAdapter.addFrag(new ThreeFragment(), "THREE");
         mViewStatePagerAdapter.addFrag(new FourFragment(), "FOUR");
         mViewStatePagerAdapter.addFrag(new FiveFragment(), "FIVE");
         mViewStatePagerAdapter.addFrag(new SixFragment(), "SIX");
@@ -94,7 +92,6 @@ public class ScrollableTabsActivity extends AppCompatActivity {
         mViewPager.setAdapter(mViewStatePagerAdapter);
         mViewPager.addOnPageChangeListener(mOnPageChangeListener);
     }
-
 
     ViewPager.OnPageChangeListener mOnPageChangeListener = new ViewPager.OnPageChangeListener() {
         @Override
@@ -114,47 +111,6 @@ public class ScrollableTabsActivity extends AppCompatActivity {
 
         }
     };
-
-
-    class ViewPagerAdapter extends FragmentPagerAdapter {
-        private final List<Fragment> mFragmentList = new ArrayList<>();
-        private final List<String> mFragmentTitleList = new ArrayList<>();
-
-        public ViewPagerAdapter(FragmentManager manager) {
-            super(manager);
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            return mFragmentList.get(position);
-        }
-
-        @Override
-        public int getCount() {
-            return mFragmentList.size();
-        }
-
-        public void addFrag(Fragment fragment, String title) {
-            mFragmentList.add(fragment);
-            mFragmentTitleList.add(title);
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            return mFragmentTitleList.get(position);
-        }
-
-        // Delete a page at a `position`
-        public void deletePage(int position)
-        {
-            // Remove the corresponding item in the data set
-            mFragmentList.remove(position);
-            mFragmentTitleList.remove(position);
-            // Notify the adapter that the data set is changed
-            notifyDataSetChanged();
-        }
-
-    }
 
     class ViewStatePagerAdapter extends FragmentStatePagerAdapter {
         private final List<Fragment> mFragmentList = new ArrayList<>();
@@ -198,34 +154,6 @@ public class ScrollableTabsActivity extends AppCompatActivity {
         public int getItemPosition(@NonNull Object object) {
             return PagerAdapter.POSITION_NONE;
         }
-    }
-
-    private void addBottomDots(int currentPage) {
-        mCouponTotal = 10;
-        dots = new TextView[mCouponTotal];
-
-//        int[] colorsActive = new int[mCouponTotal];
-//        int[] colorsInactive = new int[mCouponTotal];
-        int[] colorsActive = getResources().getIntArray(R.array.array_dot_active);
-        int[] colorsInactive = getResources().getIntArray(R.array.array_dot_inactive);
-        /*for(int i = 0 ; i < mCouponTotal; i ++){
-            colorsActive[i] = R.color.dot_light_screen;
-            colorsInactive[i] = R.color.dot_dark_screen;
-        }*/
-
-        dotsLayout.removeAllViews();
-        for (int i = 0; i < dots.length; i++) {
-            dots[i] = new TextView(this);
-            //add 。。。
-            dots[i].setText(Html.fromHtml("&#8226;", Html.FROM_HTML_MODE_LEGACY));
-            dots[i].setTextSize(25);
-            dots[i].setTextColor(colorsInactive[i]);
-            dots[i].setPadding(3,0,3,0);
-            dotsLayout.addView(dots[i]);
-        }
-
-        if (dots.length > 0)
-            dots[currentPage].setTextColor(colorsActive[currentPage]);
     }
 
     private void addDots(){
